@@ -22,21 +22,22 @@ names(dataX)<- names$V2
 colnames(sub_data) <- "Subject"
 colnames(dataY) <- "Activity"
 ## combine to form one data set with both train and test
-df <- cbind(dataX,dataY,sub_data)
+df <- cbind(sub_data,dataY,dataX)
 
 
 
 #########################################################################
 ##QUESTION TWO##################
-sapply(dataX, mean, na.rm=TRUE)  
-sapply(dataX, sd, na.rm=TRUE)  
-sapply(dataY, mean, na.rm=TRUE)  
-sapply(dataY, sd, na.rm=TRUE) 
+# sapply(dataX, mean, na.rm=TRUE)  
+# sapply(dataX, sd, na.rm=TRUE)  
+# sapply(dataY, mean, na.rm=TRUE)  
+# sapply(dataY, sd, na.rm=TRUE) 
+# 
+# ##alternatively
+# columnsWithMeanSTD <- grep(".*Mean.*|.*Std.*", names(df), ignore.case=TRUE)
 
-##alternatively
-columnsWithMeanSTD <- grep(".*Mean.*|.*Std.*", names(df), ignore.case=TRUE)
-
-
+columnsWithMeanSTD <- df %>%
+  select(Subject,Activity,contains("mean"),contains("std"))
 #######################################################################
 ######QUESTION THREE#########################
 
@@ -73,6 +74,6 @@ names(df)<-gsub("gravity", "Gravity", names(df))
 
 ###############################################################################
 #####QUESTION FIVE######################
-tidyData<-aggregate(. ~Subject + Activity, df, mean)
+tidyData<-aggregate(. ~Subject + Activity, columnsWithMeanSTD, mean)
 tidyData<-tidyData[order(tidyData$Subject,tidyData$Activity),]
 write.table(tidyData, file = "tidydata.txt",row.name=FALSE)
